@@ -19,6 +19,7 @@ import { useEffect } from 'react';
 import { StreamChat } from 'stream-chat';
 import ChatLoader from '../components/ChatLoader.jsx';
 import CallButton from '../components/CallButton.jsx';
+import ClearMessageButton from '../components/ClearMessageButton.jsx';
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY
 
@@ -65,18 +66,18 @@ const ChatPage = () => {
         setChannel(currChannel);
 
       } catch (error) {
-         console.error("Error initializing chat", error);
-         toast.error("Could not connect to chat. Please try again.");
+        console.error("Error initializing chat", error);
+        toast.error("Could not connect to chat. Please try again.");
       } finally {
         setLoading(false);
       }
     }
 
     initChat();
-  },[tokenData, authUser,targetUserId]);
+  }, [tokenData, authUser, targetUserId]);
 
   const handleVideoCall = () => {
-     if (channel) {
+    if (channel) {
       const callUrl = `${window.location.origin}/call/${channel.id}`;
 
       channel.sendMessage({
@@ -84,20 +85,20 @@ const ChatPage = () => {
       });
 
       toast.success("Video call link sent successfully");
-     }
+    }
   };
 
   const handleClearChat = async () => {
-  if (!channel) return;
+    if (!channel) return;
 
-  try {
-    await channel.truncate(); // clears all messages
-    toast.success("Chat cleared successfully!");
-  } catch (error) {
-    console.error("Error clearing chat:", error);
-    toast.error("Failed to clear chat. Please try again.");
-  }
-};
+    try {
+      await channel.truncate(); // clears all messages
+      toast.success("Chat cleared successfully!");
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+      toast.error("Failed to clear chat. Please try again.");
+    }
+  };
 
   if (loading || !chatClient || !channel) {
     return <ChatLoader />
@@ -105,19 +106,22 @@ const ChatPage = () => {
 
   return (
     <div className='h-[93vh]'>
-       <Chat client={chatClient}>
-          <Channel channel={channel}>
-             <div className="w-full relative ">
-              <CallButton handleVideoCall={handleVideoCall}/>
-               <Window>
-                  <ChannelHeader/>
-                  <MessageList />
-                  <MessageInput focus />
-               </Window>
-             </div>
-             <Thread />
-          </Channel>
-       </Chat>
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <div className="w-full relative ">
+
+            <CallButton handleVideoCall={handleVideoCall} />
+            <ClearMessageButton handleClearChat={handleClearChat} />
+
+            <Window>
+              <ChannelHeader />
+              <MessageList />
+              <MessageInput focus />
+            </Window>
+          </div>
+          <Thread />
+        </Channel>
+      </Chat>
     </div>
   )
 }
