@@ -87,6 +87,18 @@ const ChatPage = () => {
      }
   };
 
+  const handleClearChat = async () => {
+  if (!channel) return;
+
+  try {
+    await channel.truncate(); // clears all messages
+    toast.success("Chat cleared successfully!");
+  } catch (error) {
+    console.error("Error clearing chat:", error);
+    toast.error("Failed to clear chat. Please try again.");
+  }
+};
+
   if (loading || !chatClient || !channel) {
     return <ChatLoader />
   }
